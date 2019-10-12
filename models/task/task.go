@@ -1,8 +1,11 @@
-package models
+package task
 
 import (
 	"database/sql"
 	"time"
+
+	status "../status"
+	user "../user"
 )
 
 type Task struct {
@@ -12,8 +15,8 @@ type Task struct {
 	starts_at   time.Time
 	closed_at   *time.Time
 
-	status *Status
-	user   *User
+	status *status.Status
+	user   *user.User
 }
 
 type TaskEntry struct {
@@ -69,13 +72,13 @@ func getTasks(Db *sql.DB) []*Task {
 		}
 
 		if entry.status_id.Valid {
-			result.status = getStatus(Db, entry.status_id.Int32)
+			result.status = status.GetStatus(Db, entry.status_id.Int32)
 		} else {
 			result.status = nil
 		}
 
 		if entry.user_id.Valid {
-			result.user = getUser(Db, entry.user_id.Int32)
+			result.user = user.GetUser(Db, entry.user_id.Int32)
 		} else {
 			result.user = nil
 		}

@@ -1,4 +1,4 @@
-package models
+package user
 
 import "database/sql"
 
@@ -16,7 +16,7 @@ type UserEntry struct {
 
 type Token string
 
-func getUser(Db *sql.DB, id int32) *User {
+func GetUser(Db *sql.DB, id int32) *User {
 	row := Db.QueryRow("SELECT * FROM users WHERE id = ?", id)
 
 	var entry UserEntry

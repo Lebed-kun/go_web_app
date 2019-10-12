@@ -1,4 +1,4 @@
-package models
+package status
 
 import "database/sql"
 
@@ -14,7 +14,7 @@ type StatusEntry struct {
 	description sql.NullString
 }
 
-func getStatus(Db *sql.DB, id int32) *Status {
+func GetStatus(Db *sql.DB, id int32) *Status {
 	row := Db.QueryRow("SELECT * FROM statuses WHERE id = ?", id)
 	var entry StatusEntry
 	err := row.Scan(&entry.id, &entry.name, &entry.description)
