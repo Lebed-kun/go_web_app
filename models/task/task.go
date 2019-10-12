@@ -38,7 +38,7 @@ func (task *Task) getTitle() string {
 	}
 }
 
-func getTasks(Db *sql.DB) []*Task {
+func GetTasks(Db *sql.DB) []*Task {
 	var results []*Task
 
 	rows, err := Db.Query("SELECT * FROM tasks")
@@ -46,8 +46,8 @@ func getTasks(Db *sql.DB) []*Task {
 		panic(err)
 	}
 
-	var entry TaskEntry
 	for rows.Next() {
+		entry := TaskEntry{}
 		err = rows.Scan(&entry.id, &entry.title, &entry.description, &entry.starts_at, &entry.closed_at, &entry.status_id, &entry.user_id)
 		if err != nil {
 			panic(err)

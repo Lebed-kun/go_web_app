@@ -31,7 +31,7 @@ func GetUser(Db *sql.DB, id int32) *User {
 	result := User{
 		id:   entry.id.Int32,
 		name: entry.name.String,
-		salt: entry.name.String,
+		salt: entry.salt.String,
 	}
 
 	return &result
