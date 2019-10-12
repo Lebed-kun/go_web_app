@@ -2,8 +2,6 @@ package db
 
 import (
 	"database/sql"
-
-	_ "github.com/mattn/go-sqlite3"
 )
 
 func Open(driverName string, dbPath string) *sql.DB {
