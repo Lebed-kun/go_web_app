@@ -92,3 +92,48 @@ func GetTasks(Db *sql.DB) []*Task {
 
 	return results
 }
+
+func GetTask(Db *sql.DB, id int32) *Task {
+	row := Db.QueryRow("SELECT * FROM tasks WHERE id = ?", id)
+
+	var entry TaskEntry
+	err := row.Scan(&entry.id, &entry.title, &entry.description, &entry.starts_at, &entry.closed_at, &entry.status_id, &entry.user_id)
+	if err == sql.ErrNoRows {
+		return nil
+	}
+	if err != nil {
+		panic(err)
+	}
+
+	result := Task{
+		id:          entry.id.Int32,
+		description: entry.description.String,
+		starts_at:   entry.starts_at.Time,
+	}
+
+	if entry.title.Valid {
+		result.title = &entry.title.String
+	} else {
+		result.title = nil
+	}
+
+	if entry.closed_at.Valid {
+		result.closed_at = &entry.closed_at.Time
+	} else {
+		result.closed_at = nil
+	}
+
+	if entry.status_id.Valid {
+		result.status = status.GetStatus(Db, entry.status_id.Int32)
+	} else {
+		result.status = nil
+	}
+
+	if entry.user_id.Valid {
+		result.user = user.GetUser(Db, entry.user_id.Int32)
+	} else {
+		result.user = nil
+	}
+
+	return &result
+}

@@ -13,10 +13,6 @@ func TestGetTasks(test *testing.T) {
 	database := db.Open("sqlite3", "../../db/db.db")
 	tasks := GetTasks(database)
 
-	if len(tasks) != 5 {
-		test.Error("List of tasks should be equal to 5!")
-	}
-
 	fmt.Println(tasks)
 	for i := 0; i < 5; i++ {
 		fmt.Println(*tasks[i])
@@ -32,5 +28,24 @@ func TestGetTasks(test *testing.T) {
 		if (*tasks[i]).user != nil {
 			fmt.Println("User:", *tasks[i].user)
 		}
+	}
+}
+
+func TestGetTask(test *testing.T) {
+	database := db.Open("sqlite3", "../../db/db.db")
+	task := GetTask(database, 2)
+
+	fmt.Println(*task)
+	if (*task).title != nil {
+		fmt.Println("Title:", *task.title)
+	}
+	if (*task).closed_at != nil {
+		fmt.Println("Closed at:", *task.closed_at)
+	}
+	if (*task).status != nil {
+		fmt.Println("Status:", *task.status)
+	}
+	if (*task).user != nil {
+		fmt.Println("User:", *task.user)
 	}
 }
