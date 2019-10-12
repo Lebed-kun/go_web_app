@@ -38,6 +38,10 @@ func (task *Task) getTitle() string {
 	}
 }
 
+func (task *Task) getShortDesc() string {
+	return task.description[:100]
+}
+
 func GetTasks(Db *sql.DB) []*Task {
 	var results []*Task
 
