@@ -27,6 +27,14 @@ type TaskEntry struct {
 	user_id   sql.NullInt32
 }
 
+func (task *Task) getTitle() string {
+	if task.title != nil {
+		return *task.title
+	} else {
+		return task.description[:20]
+	}
+}
+
 func getTasks(Db *sql.DB) []*Task {
 	var results []*Task
 
