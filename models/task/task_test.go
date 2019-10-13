@@ -3,9 +3,12 @@ package task
 import (
 	"fmt"
 	"testing"
+	"time"
 
 	db "../../db"
 	_ "github.com/mattn/go-sqlite3"
+
+	status "../status"
 )
 
 // Done!
@@ -30,6 +33,7 @@ func TestGetTasks(test *testing.T) {
 	db.Close(database)
 }
 
+// Done!
 func TestGetTask(test *testing.T) {
 	database := db.Open("sqlite3", "../../db/db.db")
 	task := GetTask(database, 2)
@@ -46,4 +50,19 @@ func TestGetTask(test *testing.T) {
 	}
 
 	db.Close(database)
+}
+
+// Done!
+func TestCreateTask(test *testing.T) {
+	database := db.Open("sqlite3", "../../db/db.db")
+
+	data := make(map[string]interface{})
+	data["description"] = "Test create task method"
+	data["starts_at"] = time.Date(2020, time.December, 10, 0, 0, 0, 0, time.UTC)
+	data["status"] = status.GetStatus(database, 2)
+
+	task := CreateTask(database, data)
+
+	fmt.Println(*task)
+	fmt.Println("Status: ", *task.Status)
 }

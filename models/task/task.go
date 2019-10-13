@@ -115,10 +115,13 @@ func GetTask(Db *sql.DB, id int64) *Task {
 
 func CreateTask(Db *sql.DB, data map[string]interface{}) *Task {
 	dataCopy := maps.Copy(data)
+	// Modify status field for query
 	if stat, ok := data["status"]; ok {
 		dataCopy["status_id"] = stat.(*status.Status).Id
 		delete(dataCopy, "status")
 	}
+	// Modify starts_at field for query
+	dataCopy["starts_at"] = data["starts_at"].(time.Time).Format("2006-01-02")
 
 	query, values := query.PrepareInsertQuery("tasks", dataCopy)
 	result, err := Db.Exec(query, values...)

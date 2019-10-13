@@ -15,7 +15,7 @@ func PrepareInsertQuery(tableName string, data map[string]interface{}) (string, 
 	}
 
 	queryKeys := "(" + strings.Join(keys, ", ") + ")"
-	queryValues := str.GetRepeated("?", ", ", len(values))
+	queryValues := "(" + str.GetRepeated("?", ", ", len(values)) + ")"
 
 	query := "INSERT INTO " + tableName + " "
 	query += queryKeys + " VALUES " + queryValues
