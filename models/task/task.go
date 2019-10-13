@@ -151,3 +151,7 @@ func CreateTask(Db *sql.DB, data map[string]interface{}) *Task {
 
 	return &task
 }
+
+func DeleteTask(Db *sql.DB, id int64) *Task {
+
+}
