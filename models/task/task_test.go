@@ -65,4 +65,6 @@ func TestCreateTask(test *testing.T) {
 
 	fmt.Println(*task)
 	fmt.Println("Status: ", *task.Status)
+
+	db.Close(database)
 }

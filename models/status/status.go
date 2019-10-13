@@ -14,6 +14,36 @@ type StatusEntry struct {
 	description sql.NullString
 }
 
+func GetStatuses(Db *sql.DB) []*Status {
+	var statuses []*Status
+
+	rows, err := Db.Query("SELECT * FROM statuses")
+	if err != nil {
+		panic(err)
+	}
+
+	for rows.Next() {
+		entry := StatusEntry{}
+		err = rows.Scan(&entry.id, &entry.name, &entry.description)
+		if err != nil {
+			panic(err)
+		}
+
+		status := Status{
+			Id:   entry.id.Int64,
+			Name: entry.name.String,
+		}
+
+		if entry.description.Valid {
+			status.Description = &entry.description.String
+		}
+
+		statuses = append(statuses, &status)
+	}
+
+	return statuses
+}
+
 func GetStatus(Db *sql.DB, id int64) *Status {
 	row := Db.QueryRow("SELECT * FROM statuses WHERE id = ?", id)
 	var entry StatusEntry
