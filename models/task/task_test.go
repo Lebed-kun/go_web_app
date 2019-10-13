@@ -16,16 +16,18 @@ func TestGetTasks(test *testing.T) {
 	fmt.Println(tasks)
 	for i := 0; i < 5; i++ {
 		fmt.Println(*tasks[i])
-		if (*tasks[i]).title != nil {
-			fmt.Println("Title:", *tasks[i].title)
+		if (*tasks[i]).Title != nil {
+			fmt.Println("Title:", *tasks[i].Title)
 		}
-		if (*tasks[i]).closed_at != nil {
-			fmt.Println("Closed at:", *tasks[i].closed_at)
+		if (*tasks[i]).Closed_at != nil {
+			fmt.Println("Closed at:", *tasks[i].Closed_at)
 		}
-		if (*tasks[i]).status != nil {
-			fmt.Println("Status:", *tasks[i].status)
+		if (*tasks[i]).Status != nil {
+			fmt.Println("Status:", *tasks[i].Status)
 		}
 	}
+
+	db.Close(database)
 }
 
 func TestGetTask(test *testing.T) {
@@ -33,13 +35,15 @@ func TestGetTask(test *testing.T) {
 	task := GetTask(database, 2)
 
 	fmt.Println(*task)
-	if (*task).title != nil {
-		fmt.Println("Title:", *task.title)
+	if (*task).Title != nil {
+		fmt.Println("Title:", *task.Title)
 	}
-	if (*task).closed_at != nil {
-		fmt.Println("Closed at:", *task.closed_at)
+	if (*task).Closed_at != nil {
+		fmt.Println("Closed at:", *task.Closed_at)
 	}
-	if (*task).status != nil {
-		fmt.Println("Status:", *task.status)
+	if (*task).Status != nil {
+		fmt.Println("Status:", *task.Status)
 	}
+
+	db.Close(database)
 }

@@ -3,18 +3,18 @@ package status
 import "database/sql"
 
 type Status struct {
-	id          int32
-	name        string
-	description *string
+	Id          int64
+	Name        string
+	Description *string
 }
 
 type StatusEntry struct {
-	id          sql.NullInt32
+	id          sql.NullInt64
 	name        sql.NullString
 	description sql.NullString
 }
 
-func GetStatus(Db *sql.DB, id int32) *Status {
+func GetStatus(Db *sql.DB, id int64) *Status {
 	row := Db.QueryRow("SELECT * FROM statuses WHERE id = ?", id)
 	var entry StatusEntry
 	err := row.Scan(&entry.id, &entry.name, &entry.description)
@@ -26,13 +26,11 @@ func GetStatus(Db *sql.DB, id int32) *Status {
 	}
 
 	result := Status{
-		id:   entry.id.Int32,
-		name: entry.name.String,
+		Id:   entry.id.Int64,
+		Name: entry.name.String,
 	}
 	if entry.description.Valid {
-		result.description = &entry.description.String
-	} else {
-		result.description = nil
+		result.Description = &entry.description.String
 	}
 
 	return &result

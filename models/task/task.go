@@ -5,38 +5,41 @@ import (
 	"time"
 
 	status "../status"
+
+	maps "../../utils/maps"
+	query "../../utils/query"
 )
 
 type Task struct {
-	id          int32
-	title       *string
-	description string
-	starts_at   time.Time
-	closed_at   *time.Time
+	Id          int64
+	Title       *string
+	Description string
+	Starts_at   time.Time
+	Closed_at   *time.Time
 
-	status *status.Status
+	Status *status.Status
 }
 
 type TaskEntry struct {
-	id          sql.NullInt32
+	id          sql.NullInt64
 	title       sql.NullString
 	description sql.NullString
 	starts_at   sql.NullTime
 	closed_at   sql.NullTime
 
-	status_id sql.NullInt32
+	status_id sql.NullInt64
 }
 
 func (task *Task) getTitle() string {
-	if task.title != nil {
-		return *task.title
+	if task.Title != nil {
+		return *task.Title
 	} else {
-		return task.description[:20]
+		return task.Description[:20]
 	}
 }
 
 func (task *Task) getShortDesc() string {
-	return task.description[:100]
+	return task.Description[:100]
 }
 
 func GetTasks(Db *sql.DB) []*Task {
@@ -55,27 +58,21 @@ func GetTasks(Db *sql.DB) []*Task {
 		}
 
 		result := Task{
-			id:          entry.id.Int32,
-			description: entry.description.String,
-			starts_at:   entry.starts_at.Time,
+			Id:          entry.id.Int64,
+			Description: entry.description.String,
+			Starts_at:   entry.starts_at.Time,
 		}
 
 		if entry.title.Valid {
-			result.title = &entry.title.String
-		} else {
-			result.title = nil
+			result.Title = &entry.title.String
 		}
 
 		if entry.closed_at.Valid {
-			result.closed_at = &entry.closed_at.Time
-		} else {
-			result.closed_at = nil
+			result.Closed_at = &entry.closed_at.Time
 		}
 
 		if entry.status_id.Valid {
-			result.status = status.GetStatus(Db, entry.status_id.Int32)
-		} else {
-			result.status = nil
+			result.Status = status.GetStatus(Db, entry.status_id.Int64)
 		}
 
 		results = append(results, &result)
@@ -84,7 +81,7 @@ func GetTasks(Db *sql.DB) []*Task {
 	return results
 }
 
-func GetTask(Db *sql.DB, id int32) *Task {
+func GetTask(Db *sql.DB, id int64) *Task {
 	row := Db.QueryRow("SELECT * FROM tasks WHERE id = ?", id)
 
 	var entry TaskEntry
@@ -97,27 +94,57 @@ func GetTask(Db *sql.DB, id int32) *Task {
 	}
 
 	result := Task{
-		id:          entry.id.Int32,
-		description: entry.description.String,
-		starts_at:   entry.starts_at.Time,
+		Id:          entry.id.Int64,
+		Description: entry.description.String,
+		Starts_at:   entry.starts_at.Time,
 	}
 
 	if entry.title.Valid {
-		result.title = &entry.title.String
-	} else {
-		result.title = nil
+		result.Title = &entry.title.String
 	}
 
 	if entry.closed_at.Valid {
-		result.closed_at = &entry.closed_at.Time
-	} else {
-		result.closed_at = nil
+		result.Closed_at = &entry.closed_at.Time
 	}
 
 	if entry.status_id.Valid {
-		result.status = status.GetStatus(Db, entry.status_id.Int32)
-	} else {
-		result.status = nil
+		result.Status = status.GetStatus(Db, entry.status_id.Int64)
 	}
 	return &result
+}
+
+func CreateTask(Db *sql.DB, data map[string]interface{}) *Task {
+	dataCopy := maps.Copy(data)
+	if stat, ok := data["status"]; ok {
+		dataCopy["status_id"] = stat.(*status.Status).Id
+		delete(dataCopy, "status")
+	}
+
+	query, values := query.PrepareInsertQuery("tasks", dataCopy)
+	result, err := Db.Exec(query, values...)
+	if err != nil {
+		panic(err)
+	}
+
+	id, err := result.LastInsertId()
+	if err != nil {
+		panic(err)
+	}
+
+	task := Task{
+		Id:          id,
+		Description: data["description"].(string),
+		Starts_at:   data["starts_at"].(time.Time),
+	}
+	if title, ok := data["title"]; ok {
+		task.Title = title.(*string)
+	}
+	if closed_at, ok := data["closed_at"]; ok {
+		task.Closed_at = closed_at.(*time.Time)
+	}
+	if stat, ok := data["status"]; ok {
+		task.Status = stat.(*status.Status)
+	}
+
+	return &task
 }
