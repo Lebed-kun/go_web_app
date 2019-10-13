@@ -5,7 +5,6 @@ import (
 	"time"
 
 	status "../status"
-	user "../user"
 )
 
 type Task struct {
@@ -16,7 +15,6 @@ type Task struct {
 	closed_at   *time.Time
 
 	status *status.Status
-	user   *user.User
 }
 
 type TaskEntry struct {
@@ -27,7 +25,6 @@ type TaskEntry struct {
 	closed_at   sql.NullTime
 
 	status_id sql.NullInt32
-	user_id   sql.NullInt32
 }
 
 func (task *Task) getTitle() string {
@@ -52,7 +49,7 @@ func GetTasks(Db *sql.DB) []*Task {
 
 	for rows.Next() {
 		entry := TaskEntry{}
-		err = rows.Scan(&entry.id, &entry.title, &entry.description, &entry.starts_at, &entry.closed_at, &entry.status_id, &entry.user_id)
+		err = rows.Scan(&entry.id, &entry.title, &entry.description, &entry.starts_at, &entry.closed_at, &entry.status_id)
 		if err != nil {
 			panic(err)
 		}
@@ -81,12 +78,6 @@ func GetTasks(Db *sql.DB) []*Task {
 			result.status = nil
 		}
 
-		if entry.user_id.Valid {
-			result.user = user.GetUser(Db, entry.user_id.Int32)
-		} else {
-			result.user = nil
-		}
-
 		results = append(results, &result)
 	}
 
@@ -97,7 +88,7 @@ func GetTask(Db *sql.DB, id int32) *Task {
 	row := Db.QueryRow("SELECT * FROM tasks WHERE id = ?", id)
 
 	var entry TaskEntry
-	err := row.Scan(&entry.id, &entry.title, &entry.description, &entry.starts_at, &entry.closed_at, &entry.status_id, &entry.user_id)
+	err := row.Scan(&entry.id, &entry.title, &entry.description, &entry.starts_at, &entry.closed_at, &entry.status_id)
 	if err == sql.ErrNoRows {
 		return nil
 	}
@@ -128,12 +119,5 @@ func GetTask(Db *sql.DB, id int32) *Task {
 	} else {
 		result.status = nil
 	}
-
-	if entry.user_id.Valid {
-		result.user = user.GetUser(Db, entry.user_id.Int32)
-	} else {
-		result.user = nil
-	}
-
 	return &result
 }

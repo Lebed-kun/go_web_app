@@ -25,9 +25,6 @@ func TestGetTasks(test *testing.T) {
 		if (*tasks[i]).status != nil {
 			fmt.Println("Status:", *tasks[i].status)
 		}
-		if (*tasks[i]).user != nil {
-			fmt.Println("User:", *tasks[i].user)
-		}
 	}
 }
 
@@ -44,8 +41,5 @@ func TestGetTask(test *testing.T) {
 	}
 	if (*task).status != nil {
 		fmt.Println("Status:", *task.status)
-	}
-	if (*task).user != nil {
-		fmt.Println("User:", *task.user)
 	}
 }
