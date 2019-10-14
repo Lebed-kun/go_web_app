@@ -26,7 +26,7 @@ func GetTaskDetail(Db *sql.DB, paramSplitter func(string, *http.Request) []strin
 		}
 		taskEntry := task.GetTask(Db, id)
 
-		tmpl, err := template.ParseFiles("./views/task_detail.html")
+		tmpl, err := template.ParseFiles("./views/pages/task_detail.html")
 		if err != nil {
 			panic(err)
 		}

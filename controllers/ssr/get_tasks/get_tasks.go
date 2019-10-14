@@ -20,7 +20,7 @@ func GetTasks(Db *sql.DB) *controller.BindUrlHandler {
 
 		tasks := task.GetTasks(Db)
 
-		tmpl, err := template.ParseFiles("./views/tasks.html")
+		tmpl, err := template.ParseFiles("./views/pages/tasks.html")
 		if err != nil {
 			panic(err)
 		}
