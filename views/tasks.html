@@ -1,0 +1,55 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>{{.Title}}</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+</head>
+<body>
+    <header class="header">
+        <button class="h-icon">
+            <i class="fas fa-plus-circle"></i>
+        </button>
+    </header>
+
+    <div class="container">
+        <div class="row">
+            {{ range $id, $value := .Tasks }}
+                <div class="col-4 card">
+                    <h3 class="card-title">
+                        <a href="/tasks/{{ $value.Id }}">{{ $value.GetTitle  }}</a>
+
+                        <span title="Delete"><i class="fas fa-times"></i></span>
+                    </h3>
+
+                    <div class="card-body">
+                        <p class="card-text">
+                            {{ $value.GetShortDesc }}
+                        </p>
+
+                        <h5 class="card-date">
+                            Starts at: {{ $value.GetStartsAt }}
+                        </h5>
+
+                        {{ if $value.Closed_at }}
+                            <h5 class="card-date">
+                                Closed at: {{ $value.GetClosedAt }}
+                            </h5>
+                        {{ end }}
+
+                        {{ if $value.Status }}
+                            <h5 class="card-sub">
+                                Status: {{ $value.Status.GetName }}
+                            </h5>
+                        {{ end }}
+                    </div>
+                </div>
+            {{ end }}
+        </div>
+    </div>
+</body>
+</html>

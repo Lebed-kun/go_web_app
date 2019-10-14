@@ -14,6 +14,10 @@ type StatusEntry struct {
 	description sql.NullString
 }
 
+func (status *Status) GetName() string {
+	return status.Name
+}
+
 func GetStatuses(Db *sql.DB) []*Status {
 	var statuses []*Status
 

@@ -30,16 +30,32 @@ type TaskEntry struct {
 	status_id sql.NullInt64
 }
 
-func (task *Task) getTitle() string {
+func (task *Task) GetTitle() string {
 	if task.Title != nil {
 		return *task.Title
 	} else {
-		return task.Description[:20]
+		max := 20
+		if len(task.Description) < max {
+			max = len(task.Description)
+		}
+		return task.Description[:max]
 	}
 }
 
-func (task *Task) getShortDesc() string {
-	return task.Description[:100]
+func (task *Task) GetShortDesc() string {
+	max := 100
+	if len(task.Description) < max {
+		max = len(task.Description)
+	}
+	return task.Description[:max]
+}
+
+func (task *Task) GetStartsAt() string {
+	return task.Starts_at.Format("02/01/2006")
+}
+
+func (task *Task) GetClosedAt() string {
+	return task.Closed_at.Format("02/01/2006")
 }
 
 func (task *Task) Delete(Db *sql.DB) *Task {
