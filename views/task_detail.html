@@ -1,0 +1,41 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>{{ .Title }}</title>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
+<body>
+    <div class="container">
+        <div class="col-12 card">
+            <h3 class="card-title">
+                {{ .Task.GetTitle  }}
+            </h3>
+
+            <div class="card-body">
+                <p class="card-text">
+                    {{ .Task.Description }}
+                </p>
+
+                <h5 class="card-date">
+                    Starts at: {{ .Task.GetStartsAt }}
+                </h5>
+
+                {{ if .Task.Closed_at }}
+                    <h5 class="card-date">
+                        Closed at: {{ .Task.GetClosedAt }}
+                    </h5>
+                {{ end }}
+
+                {{ if .Task.Status }}
+                    <h5 class="card-sub">
+                        Status: {{ .Task.Status.GetName }}
+                    </h5>
+                {{ end }}
+            </div>
+        </div>
+    </div>
+</body>
+</html>
