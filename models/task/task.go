@@ -42,6 +42,14 @@ func (task *Task) getShortDesc() string {
 	return task.Description[:100]
 }
 
+func (task *Task) Delete(Db *sql.DB) *Task {
+	_, err := Db.Exec("DELETE FROM tasks WHERE id = ?", task.Id)
+	if err != nil {
+		panic(err)
+	}
+	return task
+}
+
 func GetTasks(Db *sql.DB) []*Task {
 	var results []*Task
 
@@ -150,8 +158,4 @@ func CreateTask(Db *sql.DB, data map[string]interface{}) *Task {
 	}
 
 	return &task
-}
-
-func DeleteTask(Db *sql.DB, id int64) *Task {
-
 }

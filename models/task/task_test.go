@@ -68,3 +68,19 @@ func TestCreateTask(test *testing.T) {
 
 	db.Close(database)
 }
+
+func TestDeleteTask(test *testing.T) {
+	database := db.Open("sqlite3", "../../db/db.db")
+
+	data := make(map[string]interface{})
+	data["description"] = "Test delete task method"
+	data["starts_at"] = time.Date(2040, time.November, 16, 0, 0, 0, 0, time.UTC)
+
+	task := CreateTask(database, data)
+	task.Delete(database)
+
+	task = GetTask(database, task.Id)
+	fmt.Println(task)
+
+	db.Close(database)
+}
