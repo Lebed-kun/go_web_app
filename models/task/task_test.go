@@ -14,7 +14,10 @@ import (
 // Done!
 func TestGetTasks(test *testing.T) {
 	database := db.Open("sqlite3", "../../db/db.db")
-	tasks := GetTasks(database)
+	tasks, err := GetTasks(database)
+	if err != nil {
+		panic(err)
+	}
 
 	fmt.Println(tasks)
 	for i := 0; i < 5; i++ {
@@ -36,7 +39,10 @@ func TestGetTasks(test *testing.T) {
 // Done!
 func TestGetTask(test *testing.T) {
 	database := db.Open("sqlite3", "../../db/db.db")
-	task := GetTask(database, 2)
+	task, err := GetTask(database, 2)
+	if err != nil {
+		panic(err)
+	}
 
 	fmt.Println(*task)
 	if (*task).Title != nil {
@@ -61,7 +67,10 @@ func TestCreateTask(test *testing.T) {
 	data["starts_at"] = time.Date(2020, time.December, 10, 0, 0, 0, 0, time.UTC)
 	data["status"] = status.GetStatus(database, 2)
 
-	task := CreateTask(database, data)
+	task, err := CreateTask(database, data)
+	if err != nil {
+		panic(err)
+	}
 
 	fmt.Println(*task)
 	fmt.Println("Status: ", *task.Status)
@@ -76,10 +85,13 @@ func TestDeleteTask(test *testing.T) {
 	data["description"] = "Test delete task method"
 	data["starts_at"] = time.Date(2040, time.November, 16, 0, 0, 0, 0, time.UTC)
 
-	task := CreateTask(database, data)
+	task, err := CreateTask(database, data)
 	task.Delete(database)
 
-	task = GetTask(database, task.Id)
+	task, err = GetTask(database, task.Id)
+	if err != nil {
+		panic(err)
+	}
 	fmt.Println(task)
 
 	db.Close(database)

@@ -11,7 +11,10 @@ import (
 // Done!
 func TestGetStatuses(test *testing.T) {
 	database := db.Open("sqlite3", "../../db/db.db")
-	statuses := GetStatuses(database)
+	statuses, err := GetStatuses(database)
+	if err != nil {
+		panic(err)
+	}
 
 	fmt.Println(statuses)
 	for i := 0; i < 3; i++ {

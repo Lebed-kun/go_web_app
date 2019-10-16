@@ -18,11 +18,15 @@ func GetTasks(Db *sql.DB) *controller.BindUrlHandler {
 			Tasks []*task.Task
 		}
 
-		tasks := task.GetTasks(Db)
+		tasks, err := task.GetTasks(Db)
+		if err != nil {
+			http.Error(writer, err.Error(), http.StatusInternalServerError)
+		}
 
 		tmpl, err := template.ParseFiles("./views/pages/tasks.html")
 		if err != nil {
-			panic(err)
+			http.Error(writer, err.Error(), http.StatusInternalServerError)
+			return
 		}
 
 		pageData := PageData{
@@ -30,7 +34,11 @@ func GetTasks(Db *sql.DB) *controller.BindUrlHandler {
 			Tasks: tasks,
 		}
 
-		tmpl.Execute(writer, pageData)
+		err = tmpl.Execute(writer, pageData)
+		if err != nil {
+			http.Error(writer, err.Error(), http.StatusInternalServerError)
+			return
+		}
 	}
 	bindHandler.Handler = handler
 

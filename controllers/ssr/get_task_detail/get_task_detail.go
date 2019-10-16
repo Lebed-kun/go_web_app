@@ -22,13 +22,24 @@ func GetTaskDetail(Db *sql.DB, paramSplitter func(string, *http.Request) []strin
 
 		id, err := strconv.ParseInt(paramSplitter(request.URL.Path, request)[0], 10, 64)
 		if err != nil {
-			panic(err)
+			http.Error(writer, err.Error(), http.StatusInternalServerError)
+			return
 		}
-		taskEntry := task.GetTask(Db, id)
+
+		taskEntry, err := task.GetTask(Db, id)
+		if err == sql.ErrNoRows {
+			http.Error(writer, err.Error(), http.StatusNotFound)
+			return
+		}
+		if err != nil {
+			http.Error(writer, err.Error(), http.StatusInternalServerError)
+			return
+		}
 
 		tmpl, err := template.ParseFiles("./views/pages/task_detail.html")
 		if err != nil {
-			panic(err)
+			http.Error(writer, err.Error(), http.StatusInternalServerError)
+			return
 		}
 
 		pageData := PageData{
@@ -36,7 +47,11 @@ func GetTaskDetail(Db *sql.DB, paramSplitter func(string, *http.Request) []strin
 			Task:  taskEntry,
 		}
 
-		tmpl.Execute(writer, pageData)
+		err = tmpl.Execute(writer, pageData)
+		if err != nil {
+			http.Error(writer, err.Error(), http.StatusInternalServerError)
+			return
+		}
 	}
 	bindHandler.Handler = handler
 

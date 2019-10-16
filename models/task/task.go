@@ -58,27 +58,27 @@ func (task *Task) GetClosedAt() string {
 	return task.Closed_at.Format("02/01/2006")
 }
 
-func (task *Task) Delete(Db *sql.DB) *Task {
+func (task *Task) Delete(Db *sql.DB) (*Task, error) {
 	_, err := Db.Exec("DELETE FROM tasks WHERE id = ?", task.Id)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
-	return task
+	return task, nil
 }
 
-func GetTasks(Db *sql.DB) []*Task {
+func GetTasks(Db *sql.DB) ([]*Task, error) {
 	var results []*Task
 
 	rows, err := Db.Query("SELECT * FROM tasks")
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	for rows.Next() {
 		entry := TaskEntry{}
 		err = rows.Scan(&entry.id, &entry.title, &entry.description, &entry.starts_at, &entry.closed_at, &entry.status_id)
 		if err != nil {
-			panic(err)
+			return nil, err
 		}
 
 		result := Task{
@@ -96,25 +96,25 @@ func GetTasks(Db *sql.DB) []*Task {
 		}
 
 		if entry.status_id.Valid {
-			result.Status = status.GetStatus(Db, entry.status_id.Int64)
+			result.Status, err = status.GetStatus(Db, entry.status_id.Int64)
+			if err != nil {
+				return nil, err
+			}
 		}
 
 		results = append(results, &result)
 	}
 
-	return results
+	return results, nil
 }
 
-func GetTask(Db *sql.DB, id int64) *Task {
+func GetTask(Db *sql.DB, id int64) (*Task, error) {
 	row := Db.QueryRow("SELECT * FROM tasks WHERE id = ?", id)
 
 	var entry TaskEntry
 	err := row.Scan(&entry.id, &entry.title, &entry.description, &entry.starts_at, &entry.closed_at, &entry.status_id)
-	if err == sql.ErrNoRows {
-		return nil
-	}
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	result := Task{
@@ -132,12 +132,15 @@ func GetTask(Db *sql.DB, id int64) *Task {
 	}
 
 	if entry.status_id.Valid {
-		result.Status = status.GetStatus(Db, entry.status_id.Int64)
+		result.Status, err = status.GetStatus(Db, entry.status_id.Int64)
+		if err != nil {
+			return nil, err
+		}
 	}
-	return &result
+	return &result, nil
 }
 
-func CreateTask(Db *sql.DB, data map[string]interface{}) *Task {
+func CreateTask(Db *sql.DB, data map[string]interface{}) (*Task, error) {
 	dataCopy := maps.Copy(data)
 	// Modify status field for query
 	if stat, ok := data["status"]; ok {
@@ -150,14 +153,13 @@ func CreateTask(Db *sql.DB, data map[string]interface{}) *Task {
 	query, values := query.PrepareInsertQuery("tasks", dataCopy)
 	result, err := Db.Exec(query, values...)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	id, err := result.LastInsertId()
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
-
 	task := Task{
 		Id:          id,
 		Description: data["description"].(string),
@@ -173,5 +175,5 @@ func CreateTask(Db *sql.DB, data map[string]interface{}) *Task {
 		task.Status = stat.(*status.Status)
 	}
 
-	return &task
+	return &task, nil
 }

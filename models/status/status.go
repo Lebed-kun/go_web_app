@@ -18,19 +18,19 @@ func (status *Status) GetName() string {
 	return status.Name
 }
 
-func GetStatuses(Db *sql.DB) []*Status {
+func GetStatuses(Db *sql.DB) ([]*Status, error) {
 	var statuses []*Status
 
 	rows, err := Db.Query("SELECT * FROM statuses")
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	for rows.Next() {
 		entry := StatusEntry{}
 		err = rows.Scan(&entry.id, &entry.name, &entry.description)
 		if err != nil {
-			panic(err)
+			return nil, err
 		}
 
 		status := Status{
@@ -45,18 +45,15 @@ func GetStatuses(Db *sql.DB) []*Status {
 		statuses = append(statuses, &status)
 	}
 
-	return statuses
+	return statuses, nil
 }
 
-func GetStatus(Db *sql.DB, id int64) *Status {
+func GetStatus(Db *sql.DB, id int64) (*Status, error) {
 	row := Db.QueryRow("SELECT * FROM statuses WHERE id = ?", id)
 	var entry StatusEntry
 	err := row.Scan(&entry.id, &entry.name, &entry.description)
-	if err == sql.ErrNoRows {
-		return nil
-	}
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	result := Status{
@@ -67,5 +64,5 @@ func GetStatus(Db *sql.DB, id int64) *Status {
 		result.Description = &entry.description.String
 	}
 
-	return &result
+	return &result, nil
 }
