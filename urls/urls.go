@@ -6,6 +6,8 @@ import (
 
 	get_task_detail_ssr "../controllers/ssr/get_task_detail"
 	get_tasks_ssr "../controllers/ssr/get_tasks"
+
+	create_task "../controllers/rest/create_task"
 )
 
 func SetUrlHandlers(Db *sql.DB) {
@@ -18,4 +20,7 @@ func SetUrlHandlers(Db *sql.DB) {
 		return params
 	})
 	http.HandleFunc("/tasks/", getTaskDetailHandlerSSR.Handler)
+
+	createTaskHandler := create_task.CreateTask(Db)
+	http.HandleFunc("/new/", createTaskHandler.Handler)
 }
