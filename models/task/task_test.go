@@ -20,7 +20,7 @@ func TestGetTasks(test *testing.T) {
 	}
 
 	fmt.Println(tasks)
-	for i := 0; i < 5; i++ {
+	for i := 0; i < len(tasks); i++ {
 		fmt.Println(*tasks[i])
 		if (*tasks[i]).Title != nil {
 			fmt.Println("Title:", *tasks[i].Title)
@@ -60,12 +60,17 @@ func TestGetTask(test *testing.T) {
 
 // Done!
 func TestCreateTask(test *testing.T) {
+	var err error
+
 	database := db.Open("sqlite3", "../../db/db.db")
 
 	data := make(map[string]interface{})
 	data["description"] = "Test create task method"
 	data["starts_at"] = time.Date(2020, time.December, 10, 0, 0, 0, 0, time.UTC)
-	data["status"] = status.GetStatus(database, 2)
+	data["status"], err = status.GetStatus(database, 2)
+	if err != nil {
+		panic(err)
+	}
 
 	task, err := CreateTask(database, data)
 	if err != nil {
@@ -78,6 +83,7 @@ func TestCreateTask(test *testing.T) {
 	db.Close(database)
 }
 
+// Done!
 func TestDeleteTask(test *testing.T) {
 	database := db.Open("sqlite3", "../../db/db.db")
 
@@ -90,7 +96,7 @@ func TestDeleteTask(test *testing.T) {
 
 	task, err = GetTask(database, task.Id)
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
 	}
 	fmt.Println(task)
 
