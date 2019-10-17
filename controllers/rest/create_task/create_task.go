@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"net/http"
+	"time"
 
 	task "../../../models/task"
 
@@ -20,6 +21,22 @@ func CreateTask(Db *sql.DB) *controller.BindUrlHandler {
 		if err != nil {
 			http.Error(writer, err.Error(), http.StatusInternalServerError)
 			return
+		}
+
+		if starts_at, ok := data["starts_at"]; ok {
+			data["starts_at"], err = time.Parse("2006-01-02", starts_at.(string))
+			if err != nil {
+				http.Error(writer, err.Error(), http.StatusInternalServerError)
+				return
+			}
+		}
+
+		if closed_at, ok := data["closed_at"]; ok {
+			data["closed_at"], err = time.Parse("2006-01-02", closed_at.(string))
+			if err != nil {
+				http.Error(writer, err.Error(), http.StatusInternalServerError)
+				return
+			}
 		}
 
 		task, err := task.CreateTask(Db, data)
