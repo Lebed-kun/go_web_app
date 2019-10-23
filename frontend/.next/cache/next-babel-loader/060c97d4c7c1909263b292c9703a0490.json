@@ -1,0 +1,1 @@
+{"ast":null,"code":"export const REST_BASE_URL = 'http://localhost:8080/api';","map":{"version":3,"sources":["C:/Users/NDLeb/Documents/projects/go_web_app/frontend/constants.js"],"names":["REST_BASE_URL"],"mappings":"AAAA,OAAO,MAAMA,aAAa,GAAG,2BAAtB","sourcesContent":["export const REST_BASE_URL = 'http://localhost:8080/api'"]},"metadata":{},"sourceType":"module"}
